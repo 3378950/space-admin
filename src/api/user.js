@@ -1,4 +1,4 @@
-import { get } from './request';
+import { get, post } from './request';
 
 
 
@@ -9,6 +9,10 @@ export const search = (paging) => {
 export const  me = () => {
     return get('/users/me');
 };
+
+export const create = user => {
+    return post('/users');
+}
 
 export default {
     me,

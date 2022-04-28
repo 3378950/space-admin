@@ -2,7 +2,7 @@
     <div class="page">
 
         <div class="q-pa-md q-gutter-sm">
-            <q-btn color="primary" label="添加用户" />
+            <q-btn color="primary" label="添加用户" @click="toggleDialog" />
         </div>
 
         <div class="q-pa-md">
@@ -17,62 +17,37 @@
                     size="sm"
             />
         </div>
+        <create-dialog v-if="showDialog" @hide="toggleDialog" />
     </div>
 </template>
 
-<script>
-    import { ref, computed } from 'vue';
-    import { search } from "../../api/user";
 
-    export default {
-        name: "index",
-        setup() {
+<script setup>
+    import { useUserSearch } from '../../composables/useUserSearch.js';
+    import { useToggleDialog } from '../../composables/useToggleDialog.js';
+    import CreateDialog from './CreateDialog.vue';
+    import { ref } from 'vue';
 
-            const columns = [
-                {
-                    field: 'id',
-                    label: 'ID',
-                    style: 'width: 50px'
-                },
-                {
-                    field: 'username',
-                    label: '用户名',
-                },
-                {
-                    field: 'nickname',
-                    label: '昵称',
-                }
-            ];
-
-            const data = ref([]);
-
-            const fetchData = () => {
-                search({ page: 0 }).then(res => {
-                    data.value = res.content;
-                    pagination.value.page = res.data.number + 1;
-                    pagination.value.rowsPerPage = res.data.size;
-                    pagination.value.rowsNumber = res.data.totalElements;
-                });
-            };
-
-            fetchData();
-
-            const pagination = ref({
-                page: 2,
-                rowsPerPage: 10,
-                rowsNumber: 10
-            });
-
-            const rows = [];
-
-            return {
-                columns,
-                pagination,
-                rows,
-                data
-            }
+    const columns = [
+        {
+            label: 'ID',
+            field: 'id'
+        },
+        {
+            field: 'username',
+            label: '用户名'
+        },
+        {
+            field: 'nickname',
+            label: '昵称'
         }
-    }
+    ];
+
+    const showDialog = ref(false);
+
+    const { toggleDialog } = useToggleDialog(showDialog);
+
+    const { data, pagination, pagesNumber, fetchData } = useUserSearch();
 </script>
 
 <style scoped>
