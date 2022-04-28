@@ -1,6 +1,6 @@
 import axios from "axios";
 import store from "../store"
-import Notify from "quasar/src/plugins/Notify";
+import notify from '../utils/notify.js';
 
 const baseURL = import.meta.env.VITE_API_HOST
 const tokenPrefix = "Bearer ";
@@ -17,25 +17,42 @@ instance.interceptors.request.use(
         return config;
     },
     error => {
+        const response = error.response;
         // do something with request error
-        console.log(error) // for debug
         return Promise.reject(error)
     }
 )
 
 instance.interceptors.response.use(
     response => {
+        if (response.data.code) {
+            handleErrorResponse(response);
+            return Promise.reject(response.data);
+        }
         return response.data;
-}, error => {
+    },
+    error => {
+        if (!error.response) {
+            notify.error('请求不成功，请联系后台管理员');
+        }
+        handleErrorResponse(error.response);
+        return Promise.reject(error);
+    }
+);
 
-        store.dispatch('user/logout');
-    Notify.create({
-        type: 'negative',
-        message: error.message,
-        position: 'top'
-    });
-    return Promise.reject(error)
-    });
+const handleErrorResponse = response => {
+    if (response.status === 401 || response.status === 403) {
+        store.dispatch('user/logout').then(() => window.location.reload());
+    }
+
+    if (response.data instanceof Array) {
+        response.data.forEach(item => {
+            notify.error(item.message);
+        });
+    } else {
+        notify.error(response.data.message);
+    }
+};
 
 const {get, post, put } = instance
 

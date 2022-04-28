@@ -35,6 +35,8 @@
     import { ref } from 'vue';
     import { useStore } from 'vuex';
     import { useRoute, useRouter } from "vue-router";
+    import { useQuasar } from 'quasar';
+
 
     export default {
         name: 'Login',
@@ -49,10 +51,10 @@
 
             const onSubmit = (username, password) => {
                 store.dispatch('user/login', { username, password }).then(() => {
-                        store.dispatch('user/fetchCurrentUser');
-                        router.push({path: route.query.redirect || '/'});
+                    store.dispatch('user/fetchCurrentUser').then(() => {
+                        router.push({ path: route.query.redirect || '/' });
                     });
-                // console.log(username, password);
+                });
             };
             return {
                 accept,
@@ -61,7 +63,7 @@
                 onSubmit
             };
         }
-    }
+    };
 </script>
 
 <style scoped lang="less">

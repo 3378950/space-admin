@@ -10,3 +10,8 @@ export const  me = () => {
     return get('/users/me');
 };
 
+export default {
+    me,
+    search
+};
+

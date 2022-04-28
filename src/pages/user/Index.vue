@@ -47,8 +47,8 @@
             const data = ref([]);
 
             const fetchData = () => {
-                search({ page: 0}).then(res => {
-                    data.value = data.value.concat(res.data.content);
+                search({ page: 0 }).then(res => {
+                    data.value = res.content;
                     pagination.value.page = res.data.number + 1;
                     pagination.value.rowsPerPage = res.data.size;
                     pagination.value.rowsNumber = res.data.totalElements;

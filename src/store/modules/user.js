@@ -1,9 +1,13 @@
-import { getToken } from "../../utils/auth.js";
-import { setToken} from "../../utils/auth.js";
-import { removeToken} from "../../utils/auth.js";
-import {createToken} from "../../api/token.js";
-import { me } from "../../api/user.js";
-import { getCurrentUser, setCurrentUser } from "../../utils/auth";
+import {
+    getCurrentUser,
+    getToken,
+    removeCurrentUser,
+    removeToken,
+    setCurrentUser,
+    setToken
+} from '../../utils/auth.js';
+import { createToken } from '../../api/token';
+import user from '../../api/user';
 
 const state = () => ({
     token: getToken(),
@@ -12,37 +16,40 @@ const state = () => ({
 
 const getters = {
     nicknameFirstWord: state => {
-        return state.currentUser ? state.currentUser.nickname.slice(0, 1) : '';
+        return state.currentUser && state.currentUser.nickname
+            ? state.currentUser.nickname.slice(0, 1)
+            : '';
     }
 };
 
 const actions = {
     login({ commit }, { username, password }) {
         return new Promise((resolve, reject) => {
-            createToken(username.trim(), password )
+            createToken(username.trim(), password)
                 .then(token => {
-                // console.log(response);
                     commit('SET_TOKEN', token);
-                setToken(token);
-                resolve();
-            })
+                    setToken(token);
+                    resolve();
+                })
                 .catch(error => {
-                reject(error);
-            });
-        })
+                    reject(error);
+                });
+        });
     },
-    // user logout
-    logout({ commit}) {
+    logout({ commit }) {
         commit('SET_TOKEN', '');
+        commit('SET_CURRENT_USER', null);
         removeToken();
+        removeCurrentUser();
     },
-    fetchCurrentUser({commit}) {
+    fetchCurrentUser({ commit }) {
         return new Promise((resolve, reject) => {
-            me()
-                .then(currentUser => {
-                    commit('SET_CURRENT_USER', currentUser);
-                    setCurrentUser(currentUser);
-                    resolve(currentUser);
+            user
+                .me()
+                .then(currenUser => {
+                    commit('SET_CURRENT_USER', currenUser);
+                    setCurrentUser(currenUser);
+                    resolve(currenUser);
                 })
                 .catch(error => {
                     reject(error);
