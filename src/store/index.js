@@ -8,5 +8,5 @@ export default createStore({
     modules: {
         user
     },
-    plugins : debug ? [createLogger] : []
+    plugins : debug ? [createLogger()] : []
 });

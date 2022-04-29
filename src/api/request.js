@@ -1,6 +1,7 @@
 import axios from "axios";
 import store from "../store"
-import notify from '../utils/notify.js';
+import { evaEdit } from '@quasar/extras/eva-icons';
+import { Notify } from 'quasar';
 
 const baseURL = import.meta.env.VITE_API_HOST
 const tokenPrefix = "Bearer ";
@@ -32,9 +33,6 @@ instance.interceptors.response.use(
         return response.data;
     },
     error => {
-        if (!error.response) {
-            notify.error('请求不成功，请联系后台管理员');
-        }
         handleErrorResponse(error.response);
         return Promise.reject(error);
     }
@@ -47,12 +45,21 @@ const handleErrorResponse = response => {
 
     if (response.data instanceof Array) {
         response.data.forEach(item => {
-            notify.error(item.message);
+            Notify.create({
+                type: 'negative',
+                message: item.message,
+                position: 'top'
+            });
         });
     } else {
-        notify.error(response.data.message);
+        Notify.create({
+            type: 'negative',
+            message: response.data.message,
+            position: 'top'
+        });
     }
 };
+
 
 const {get, post, put } = instance
 

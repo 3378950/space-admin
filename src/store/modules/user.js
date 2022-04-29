@@ -7,7 +7,7 @@ import {
     setToken
 } from '../../utils/auth.js';
 import { createToken } from '../../api/token';
-import user from '../../api/user';
+import { me } from '../../api/user';
 
 const state = () => ({
     token: getToken(),
@@ -44,8 +44,7 @@ const actions = {
     },
     fetchCurrentUser({ commit }) {
         return new Promise((resolve, reject) => {
-            user
-                .me()
+            me()
                 .then(currenUser => {
                     commit('SET_CURRENT_USER', currenUser);
                     setCurrentUser(currenUser);
